@@ -37,6 +37,13 @@ class Validate
      * @var boolean
      */
     private $optional = false;
+    
+    /**
+     * Symfony kernal
+     * 
+     * @var \Symfony\Component\HttpKernel
+     */
+    private $kernel;
 
     /**
      * Creates a new paramter validation object
@@ -86,6 +93,30 @@ class Validate
     }
     
     /**
+     * Set the symfony kernel
+     * 
+     * @param \Symfony\Component\HttpKernel $kernel HttpKernel
+     * 
+     * @return \AW\HmacBundle\Annotations\Validation\Validate
+     */
+    public function setKernel($kernel)
+    {
+        $this->kernel = $kernel;
+        
+        return $this;
+    }
+    
+    /**
+     * Get the symfony kernal
+     * 
+     * @return \Symfony\Component\HttpKernel
+     */
+    public function getKernel()
+    {
+        return $this->kernel;
+    }
+
+    /**
      * Validation function.  Loop through the supplied fields and compare with
      * the supplied parameters.
      * 
@@ -110,7 +141,10 @@ class Validate
         );
             
         // Set the value to be used
-        if (array_key_exists($this->getField(), $parameters)) {
+        if ($this->getField() 
+            && is_array($parameters)
+            && array_key_exists($this->getField(), $parameters)
+        ) {
             $this->value = $parameters[$this->getField()];
         }
         
@@ -143,7 +177,8 @@ class Validate
      */
     public function validateExists($parameters)
     {
-        if (!array_key_exists($this->getField(), $parameters) 
+        if (is_array($parameters)
+            && !array_key_exists($this->getField(), $parameters) 
             && !is_null($this->getField())
         ) {
             $this->setValidationException(

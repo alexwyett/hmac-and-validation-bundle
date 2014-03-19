@@ -96,6 +96,10 @@ class AnnotationDriver
                 }
                 
             } else if (strpos(get_class($annotation), 'AW\HmacBundle\Annotations\Validation') === 0) {
+                
+                // Add in kernal
+                $annotation->setKernel($controller[0]->get('kernel'));
+                
                 // If the annotation object exists in the Validation namespace
                 // call the validate function with the supplied data
                 $annotation->validate(

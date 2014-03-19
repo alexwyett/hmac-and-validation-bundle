@@ -40,12 +40,9 @@ class ValidateSchema extends Validate
     {
         parent::__construct($options);
         if (isset($options['schema'])) {
-            $retriever = new \JsonSchema\Uri\UriRetriever();
-            $this->schema = $retriever->retrieve(
-                'file://' . $options['schema']
-            );
-            $refResolver = new \JsonSchema\RefResolver($retriever);
-            $refResolver->resolve($this->schema, 'file://' . __DIR__);
+            $this->schema = $options['schema'];
+        } else {
+            throw new Exception('Path to schema mush be supplied');
         }
     }
     
@@ -62,12 +59,21 @@ class ValidateSchema extends Validate
     public function validateSchema($parameters)
     {
         // Remove hmacKey/hmacHash
-        if (isset($parameters['hmacKey'])) {
-            unset($parameters['hmacKey']);
+        if (is_array($parameters)) {
+            if (isset($parameters['hmacKey'])) {
+                unset($parameters['hmacKey']);
+            }
+            if (isset($parameters['hmacHash'])) {
+                unset($parameters['hmacHash']);
+            }
         }
-        if (isset($parameters['hmacHash'])) {
-            unset($parameters['hmacHash']);
-        }
+        
+        $retriever = new \JsonSchema\Uri\UriRetriever();
+        $schema = $retriever->retrieve(
+            'file://' . $this->getKernel()->locateResource($this->schema)
+        );
+        $refResolver = new \JsonSchema\RefResolver($retriever);
+        $refResolver->resolve($schema, 'file://' . __DIR__);
         
         // Encode the json data if a json object has not been supplied
         if (is_array($parameters)) {
@@ -76,7 +82,7 @@ class ValidateSchema extends Validate
         
         // Create new validation object
         $validator = new \JsonSchema\Validator();
-        $validator->check($parameters, $this->schema);
+        $validator->check($parameters, $schema);
         
         // Output errors if not valid
         if (!$validator->isValid()) {
