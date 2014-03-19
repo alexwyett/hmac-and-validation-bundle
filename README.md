@@ -43,7 +43,7 @@ aw_hmac_bundle:
 ```
 
 
-### If installed with composer
+### If installed with composer as a symfony dependancy
 From within the symfony route:
 `phpunit -c app/ vendor/AW/hmac-and-validation-bundle/AW/HmacBundle/Tests`
 
