@@ -52,7 +52,7 @@ class AnnotationDriver
      * 
      * @return void
      */
-    public function __construct($reader, $entityManager, $useHmac)
+    public function __construct($reader, $entityManager, $useHmac = false)
     {
         $this->reader = $reader;
         $this->entityManager = $entityManager;
