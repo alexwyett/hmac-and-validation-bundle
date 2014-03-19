@@ -23,6 +23,17 @@ class Configuration implements ConfigurationInterface
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for
         // more information on that topic.
+        
+        $rootNode
+            ->children()
+                ->booleanNode('hmac')
+                    ->defaultValue(false)
+                ->end()
+                ->arrayNode('hmac_roles')
+                ->prototype('scalar')->end()
+                ->defaultValue(array('USER', 'ADMIN'))
+                ->end()
+            ->end();
 
         return $treeBuilder;
     }
