@@ -4,7 +4,21 @@ Symfony HMAC and Validation Bundle
 Symfony Bundle to handle HMAC authentication and Parameter validation
 
 ## Configuration
-There are several parameters 
+There are several optional parameters which can be added into the config.yml, these are:
+
+```
+
+aw_hmac:
+    # Set to either depending on if you want hmac authentication turned on or not
+    hmac: true|false
+    
+    # Add in additional roles as required
+    hmac_roles: ["USER", "ADMIN"]
+    
+    # Add a path to a directory which stores your json validation schemas
+    json_schema_route: /path/to/your/schema/dir 
+
+```
 
 ## Running unit tests
 
