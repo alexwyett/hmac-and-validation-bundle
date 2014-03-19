@@ -42,7 +42,7 @@ class ValidateSchema extends Validate
         if (isset($options['schema'])) {
             $retriever = new \JsonSchema\Uri\UriRetriever();
             $this->schema = $retriever->retrieve(
-                'file://' . dirname(__FILE__) . '/Schemas/' . $options['schema']
+                'file://' . $options['schema']
             );
             $refResolver = new \JsonSchema\RefResolver($retriever);
             $refResolver->resolve($this->schema, 'file://' . __DIR__);
