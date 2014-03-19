@@ -1,5 +1,5 @@
 {
-    "name": "AW/hmac-and-validation-bundle",
+    "name": "aw/hmac-and-validation-bundle",
     "description": "HMAC and Parameter Validation Bundle for Symfony2",
     "homepage": "https://github.com/alexwyett/hmac-and-validation-bundle",
     "license": "proprietary",
