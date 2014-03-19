@@ -29,7 +29,7 @@ class ApiKeyController extends DefaultController
      * 
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function indexAction()
+    public function debugAction()
     {
         $params = AWAnnotation\HMAC::getHashParams(
             $this->getRequest()
