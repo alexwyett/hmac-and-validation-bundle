@@ -23,18 +23,27 @@ class ApiUserService
      * @var \Doctrine\ORM\EntityManager
      */
     private $em;
+    
+    /**
+     * Defined User Roles
+     * 
+     * @var array
+     */
+    private $roles;
 
 
     /**
      * Creates a new actor object
      *
-     * @param \Doctrine\ORM\EntityManager $em The entity manager
+     * @param \Doctrine\ORM\EntityManager $em    The entity manager
+     * @param array                       $roles User Roles
      * 
      * @return void
      */
-    public function __construct($em)
+    public function __construct($em, $roles)
     {
         $this->em = $em;
+        $this->roles = $roles;
     }
     
     /**
@@ -45,7 +54,7 @@ class ApiUserService
     public function getApiUsers()
     {
         $users = array();
-        $usersEm = $this->em->getRepository('TOCCHmacBundle:ApiUser')->findAll();
+        $usersEm = $this->em->getRepository('AWHmacBundle:ApiUser')->findAll();
         foreach ($usersEm as $user) {
             $users[] = $user->toArray();
         }
@@ -80,7 +89,7 @@ class ApiUserService
     public function createUser($key, $email)
     {
         if ($this->em->getRepository(
-            'TOCCHmacBundle:ApiUser'
+            'AWHmacBundle:ApiUser'
             )->findOneByApikey($key)
         ) {
             throw new APIException('User already exists', -1, 400);
@@ -226,7 +235,7 @@ class ApiUserService
     private function _getApiUser($apikey)
     {
         $user = $this->em->getRepository(
-            'TOCCHmacBundle:ApiUser'
+            'AWHmacBundle:ApiUser'
         )->findOneByApikey($apikey);
         
         if ($user) {
@@ -243,9 +252,6 @@ class ApiUserService
      */
     private function _getAllowedRoles()
     {
-        return array(
-            'ADMIN',
-            'USER'
-        );
+        return $this->roles;
     }
 }
