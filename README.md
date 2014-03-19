@@ -33,5 +33,5 @@ aw_hmac_bundle:
 From within the symfony route:
 `phpunit -c app/ vendor/AW/hmac-and-validation-bundle/AW/HmacBundle/Tests`
 
-### If cloned directly into a symfony instal
+### If cloned directly into a symfony install
 `phpunit -c app/ AW/HmacBundle/`
