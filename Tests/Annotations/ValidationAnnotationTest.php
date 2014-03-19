@@ -2,7 +2,7 @@
 
 namespace AW\HmacBundle\Tests\Annotations;
 
-use AW\HmacBundle\Tests\ToccTest;
+use AW\HmacBundle\Tests\TestBase;
 
 /**
  * Test the valiation annotation clases
@@ -14,7 +14,7 @@ use AW\HmacBundle\Tests\ToccTest;
  * @license   All rights reserved
  * @link      http://www.wyett.co.uk
  */
-class ValidationAnnotationTest extends ToccTest
+class ValidationAnnotationTest extends TestBase
 {
     /**
      * Validation test function

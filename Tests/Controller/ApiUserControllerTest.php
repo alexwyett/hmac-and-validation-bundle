@@ -2,9 +2,9 @@
 
 namespace AW\HmacBundle\Tests\Controller;
 
-use AW\HmacBundle\Tests\ToccTest;
+use AW\HmacBundle\Tests\TestBase;
 
-class ApiUserControllerTest extends ToccTest
+class ApiUserControllerTest extends TestBase
 {
     /**
      * Test the ping endpoint

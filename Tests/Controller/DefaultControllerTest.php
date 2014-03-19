@@ -2,26 +2,10 @@
 
 namespace AW\HmacBundle\Tests\Controller;
 
-use AW\HmacBundle\Tests\ToccTest;
+use AW\HmacBundle\Tests\TestBase;
 
-class DefaultControllerTest extends ToccTest
+class DefaultControllerTest extends TestBase
 {    
-    /**
-     * Test the ping endpoint
-     * 
-     * @return void
-     */
-    public function testPing()
-    {
-        extract(
-            $this->doRequest(
-                '/hmac/ping'
-            )
-        );
-        
-        $this->assertEquals('pong', $content);
-    }
-    
     /**
      * Test the hmac debug route
      * 
