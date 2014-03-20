@@ -202,6 +202,55 @@ class ValidationAnnotationTest extends TestBase
                 '`jjhgjgj` in foo fails regex pattern /[1-9]+/',
                 -1,
                 400
+            ),
+            array(
+                'ValidateDate',
+                array(
+                    'field' => 'date'
+                ),
+                array(),
+                'date is required',
+                -1,
+                400
+            ),
+            array(
+                'ValidateDate',
+                array(
+                    'field' => 'date'
+                ),
+                array(
+                    'date' => 'invaliddateformat'
+                ),
+                'invaliddateformat is not a valid date',
+                -1,
+                400
+            ),
+            array(
+                'ValidateDate',
+                array(
+                    'field' => 'date',
+                    'minDate' => 'now'
+                ),
+                array(
+                    'date' => '2012-01-01'
+                ),
+                '2012-01-01 is less than the minimum date of ' . date('d-m-Y'),
+                -1,
+                400
+            ),
+            array(
+                'ValidateDate',
+                array(
+                    'field' => 'date',
+                    'minDate' => 'now',
+                    'maxDate' => '+1 year'
+                ),
+                array(
+                    'date' => date('d-m-Y', strtotime('+2 years'))
+                ),
+                date('d-m-Y', strtotime('+2 years')) . ' is greater than the maximum date of ' . date('d-m-Y'),
+                -1,
+                400
             )
         );
     }
