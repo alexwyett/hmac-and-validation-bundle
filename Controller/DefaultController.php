@@ -45,7 +45,7 @@ abstract class DefaultController extends Controller
     {
         $response = new \Symfony\Component\HttpFoundation\Response();
         $response->setStatusCode($status);
-        $response->headers->set('Location', $location);
+        $response->headers->set('Content-Location', $location);
 
         return $response;
     }
