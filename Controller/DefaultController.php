@@ -105,5 +105,17 @@ abstract class DefaultController extends Controller
             return $val;
         }
     }
+    
+    /**
+     * Get the entity mananger
+     * 
+     * @param string $name Entity Manager Name
+     * 
+     * @return \Doctrine\ORM\EntityManager
+     */
+    public function getEm($name = 'default')
+    {
+        return $this->get('doctrine')->getManager($name);
+    }
 
 }
