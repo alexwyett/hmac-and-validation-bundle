@@ -2,6 +2,8 @@
 
 namespace AW\HmacBundle\Exceptions;
 
+use \Symfony\Component\HttpFoundation\Response;
+
 /**
  * Exception class for the HmacBundle.
  *
@@ -47,5 +49,32 @@ class APIException extends \RuntimeException
     public function getHTTPStatusCode()
     {
         return $this->httpStatusCode;
+    }
+    
+    
+    /**
+     * Return a default json response
+     * 
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function getResponse()
+    {
+        // Build the response
+        $content = array();
+        $content['errorCode'] = $this->getCode();
+        $content['errorDescription'] = $this->getMessage();
+        $content['errorLocation'] = sprintf(
+            '%s +%d', 
+            $this->getFile(), 
+            $this->getLine()
+        );
+        $content['errorTrace'] = $this->getTrace();
+        
+        // Call the parent constructor
+        return new \Symfony\Component\HttpFoundation\Response(
+            json_encode($content), 
+            $this->getHTTPStatusCode(), 
+            array('Content-Type' => 'application/json')
+        );
     }
 }
