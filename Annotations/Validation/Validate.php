@@ -1,7 +1,7 @@
 <?php
 
 namespace AW\HmacBundle\Annotations\Validation;
-use AW\HmacBundle\Exceptions\APIException as APIException;
+use AW\HmacBundle\Exceptions\ValidationException as ValidationException;
 
 /**
  * This annotation performs some basic parameter validation on POST/PUT requests
@@ -203,6 +203,11 @@ class Validate
      */
     protected function setValidationException($message, $code, $status)
     {
-        throw new APIException($message, $code, $status);
+        throw new ValidationException(
+            $this->getField(), 
+            $message, 
+            $code, 
+            $status
+        );
     }
 }
