@@ -83,6 +83,9 @@ class AnnotationDriver
         if (!($controller[0] instanceof \Symfony\Bundle\FrameworkBundle\Controller\Controller)) {
             return;
         }
+        
+        $validationAnnotation = $this->_getValidationCollection($method);        
+        $validationExceptions = array();
 
         $request = $controller[0]->get('request');
         foreach ($this->reader->getMethodAnnotations($method) as $annotation) {
@@ -95,17 +98,31 @@ class AnnotationDriver
                     $this->_hmacValidation($annotation, $request);
                 }
                 
-            } else if (strpos(get_class($annotation), 'AW\HmacBundle\Annotations\Validation') === 0) {
+            } else if ($this->_isValidationAnnotation($annotation)) {
                 
                 // Add in kernal
                 $annotation->setKernel($controller[0]->get('kernel'));
                 
-                // If the annotation object exists in the Validation namespace
-                // call the validate function with the supplied data
-                $annotation->validate(
-                    $this->_getPostData($request)    
-                );
+                try {
+                    // If the annotation object exists in the Validation namespace
+                    // call the validate function with the supplied data
+                    $annotation->validate(
+                        $this->_getPostData($request)    
+                    );
+                } catch (APIException $ex) {
+                    if ($validationAnnotation) {
+                        array_push($validationExceptions, $ex);
+                    } else {
+                        throw $ex;
+                    }
+                }
             }
+        }
+        
+        // Set the ValidationCollection exceptions
+        if (count($validationExceptions) > 0) {
+            $validationAnnotation->setExceptions($validationExceptions);
+            $validationAnnotation->throwException();
         }
     }
     
@@ -180,6 +197,60 @@ class AnnotationDriver
                 $request->query->all(), 
                 $request->request->all()
             );
+        }
+    }
+    
+    /**
+     * Return true if annotation object is part of the validation namespace
+     * 
+     * @param object $annotation Annotation instance
+     * 
+     * @return boolean
+     */
+    private function _isValidationAnnotation($annotation)
+    {
+        return (strpos(
+            get_class($annotation), 
+            'AW\HmacBundle\Annotations\Validation\\'
+        ) === 0);
+    }
+    
+    /**
+     * Return true if annotation object is part of the validation 
+     * exception namespace
+     * 
+     * @param object $annotation Annotation instance
+     * 
+     * @return boolean
+     */
+    private function _isValidationCollectionAnnotation($annotation)
+    {
+        return (strpos(
+            get_class($annotation), 
+            'AW\HmacBundle\Annotations\ValidationCollection'
+        ) === 0);
+    }
+    
+    /**
+     * Return the validation collection annotation if set
+     * 
+     * @param string $method Controller method
+     * 
+     * @return AW\HmacBundle\Annotations\ValidationCollection|boolean
+     */
+    private function _getValidationCollection($method)
+    {
+        $array = array_filter(
+            $this->reader->getMethodAnnotations($method), 
+            function($annotation) {
+                return ($this->_isValidationCollectionAnnotation($annotation));
+            }
+        );
+        
+        if (count($array) == 1) {
+            return array_shift($array);
+        } else {
+            return false;
         }
     }
 }
