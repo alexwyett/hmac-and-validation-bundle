@@ -38,7 +38,6 @@ class APIException extends \RuntimeException
         parent::__construct($message, $errorCode);
     }
 
-
     /**
      * Get the HTTP code associated with this exception
      *
@@ -51,6 +50,25 @@ class APIException extends \RuntimeException
         return $this->httpStatusCode;
     }
     
+    /**
+     * Return the content for the error response
+     * 
+     * @return array
+     */
+    public function getErrorContent()
+    {
+        return array(
+            'errorCode' => $this->getCode(),
+            'errorDescription' => $this->getMessage(),
+            'errorLocation' => sprintf(
+                '%s +%d', 
+                $this->getFile(), 
+                $this->getLine()
+            ),
+            'errorTrace' => $this->getTrace()
+        );
+    }
+    
     
     /**
      * Return a default json response
@@ -59,20 +77,8 @@ class APIException extends \RuntimeException
      */
     public function getResponse()
     {
-        // Build the response
-        $content = array();
-        $content['errorCode'] = $this->getCode();
-        $content['errorDescription'] = $this->getMessage();
-        $content['errorLocation'] = sprintf(
-            '%s +%d', 
-            $this->getFile(), 
-            $this->getLine()
-        );
-        $content['errorTrace'] = $this->getTrace();
-        
-        // Call the parent constructor
         return new \Symfony\Component\HttpFoundation\Response(
-            json_encode($content), 
+            json_encode($this->getErrorContent()), 
             $this->getHTTPStatusCode(), 
             array('Content-Type' => 'application/json')
         );
