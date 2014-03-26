@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use AW\HmacBundle\Annotations as AWAnnotation;
 use AW\HmacBundle\Annotations\HMAC;
 use AW\HmacBundle\Annotations\Validation;
+use AW\HmacBundle\Annotations\ValidationCollection;
 
 /**
  * ApiKey Crud controller
