@@ -120,7 +120,9 @@ class ValidationCollection
         $exception->setFields($this->_getFieldsAndMessages());
         
         if ($this->redirect === true) {
-            $exception->setRedirect($this->_getRequest()->headers->get('referer'));
+            $exception->setRedirect(
+                $this->getController()->getRequest()->headers->get('referer')
+            );
         } else if ($this->forward) {
             $exception->setForward(
                 $this->getController()->forward($this->forward)
@@ -153,6 +155,6 @@ class ValidationCollection
      */
     private function _getRequest()
     {
-        $this->controller->getRequest();
+        $this->getController()->get('request');
     }
 }
