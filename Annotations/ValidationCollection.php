@@ -29,6 +29,20 @@ class ValidationCollection
      * @var string
      */
     protected $redirect;
+    
+    /**
+     * Forward to additional controller
+     * 
+     * @var string
+     */
+    protected $forward;
+    
+    /**
+     * Controller
+     * 
+     * @var \Symfony\Bundle\FrameworkBundle\Controller\Controller
+     */
+    protected $controller;
 
     /**
      * Creates a new Validation Collection object
@@ -41,6 +55,9 @@ class ValidationCollection
     {
         if (isset($options['redirect'])) {
             $this->redirect = $options['redirect'];
+        }
+        if (isset($options['forward'])) {
+            $this->forward = $options['forward'];
         }
     }
     
@@ -69,6 +86,30 @@ class ValidationCollection
     }    
     
     /**
+     * Set the controller object
+     * 
+     * @param \Symfony\Bundle\FrameworkBundle\Controller\Controller $controller Controller
+     * 
+     * @return \AW\HmacBundle\Annotations\ValidationCollection
+     */
+    public function setController($controller)
+    {
+        $this->controller = $controller;
+        
+        return $this;
+    }
+    
+    /**
+     * Return the controller
+     * 
+     * @return \Symfony\Bundle\FrameworkBundle\Controller\Controller
+     */
+    public function getController()
+    {
+        return $this->controller;
+    }
+    
+    /**
      * Throw a collective response
      * 
      * @throws AW\HmacBundle\Exceptions\ValidationCollection\Exception
@@ -77,7 +118,17 @@ class ValidationCollection
     {
         $exception = new VEC('Validation errors have occured', -1, 400);
         $exception->setFields($this->_getFieldsAndMessages());
-        $exception->setRedirect($this->redirect);
+        
+        if ($this->redirect === true) {
+            $exception->setRedirect($this->_getRequest()->headers->get('referer'));
+        } else if ($this->forward) {
+            $exception->setForward(
+                $this->getController()->forward($this->forward)
+            );
+        } else {
+            $exception->setRedirect($this->redirect);
+        }
+        
         throw $exception;
     }
     
@@ -93,5 +144,15 @@ class ValidationCollection
             $fields[$ex->getField()] = $ex->getMessage();
         }
         return $fields;
+    }
+    
+    /**
+     * Set the request object
+     * 
+     * @return \Symfony\Component\HttpFoundation\Request
+     */
+    private function _getRequest()
+    {
+        $this->controller->getRequest();
     }
 }

@@ -102,6 +102,7 @@ class ApiKeyController extends DefaultController
      * @HMAC(public=false, roles="ADMIN")
      * @Validation\ValidateString(field="key", maxLength=64)
      * @Validation\ValidateEmail(field="email", maxLength=128)
+     * @ValidationCollection(redirect=true)
      * 
      * @return \Symfony\Component\HttpFoundation\Response
      */

@@ -122,6 +122,7 @@ class AnnotationDriver
         // Set the ValidationCollection exceptions
         if (count($validationExceptions) > 0) {
             $validationAnnotation->setExceptions($validationExceptions);
+            $validationAnnotation->setController($controller[0]);
             $validationAnnotation->throwException();
         }
     }

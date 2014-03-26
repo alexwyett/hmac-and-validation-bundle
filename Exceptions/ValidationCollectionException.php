@@ -31,6 +31,13 @@ class ValidationCollectionException extends APIException
     private $redirect;
     
     /**
+     * Forward response
+     * 
+     * @var \Symfony\Component\HttpFoundation\Response
+     */
+    private $forward;
+    
+    /**
      * Set the errored fields
      * 
      * @param array $fields Fields which threw an exception
@@ -74,6 +81,20 @@ class ValidationCollectionException extends APIException
     }
     
     /**
+     * Set the forward url
+     * 
+     * @param string $forward Forward url
+     * 
+     * @return \AW\HmacBundle\Exceptions\APIException
+     */
+    public function setForward($forward)
+    {
+        $this->forward = $forward;
+        
+        return $this;
+    }
+    
+    /**
      * Return the content for the exception
      * 
      * @return array
@@ -106,6 +127,14 @@ class ValidationCollectionException extends APIException
      */
     public function getResponse()
     {
+        if($this->forward) {
+            $this->forward->headers->set(
+                'Validation-Errors', 
+                json_encode($this->getFields())
+            );
+            return $this->forward;
+        }
+        
         $response = new \Symfony\Component\HttpFoundation\Response();
         $response->setStatusCode($this->getHTTPStatusCode());
         if ($this->redirect) {
