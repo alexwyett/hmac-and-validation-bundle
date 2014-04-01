@@ -119,6 +119,11 @@ class ValidationCollection
         $exception = new VEC('Validation errors have occured', -1, 400);
         $exception->setFields($this->_getFieldsAndMessages());
         
+        $this->getController()->get('session')->getFlashBag()->add(
+            'errors',
+            $this->_getFieldsAndMessages()
+        );
+        
         if ($this->redirect === true) {
             $exception->setRedirect(
                 $this->getController()->getRequest()->headers->get('referer')

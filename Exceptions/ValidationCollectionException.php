@@ -83,7 +83,7 @@ class ValidationCollectionException extends APIException
     /**
      * Set the forward url
      * 
-     * @param string $forward Forward url
+     * @param \Symfony\Component\HttpFoundation\Response $forward Forward Response
      * 
      * @return \AW\HmacBundle\Exceptions\APIException
      */
