@@ -33,7 +33,7 @@ class ApiUserService
 
 
     /**
-     * Creates a new actor object
+     * Creates a new user object
      *
      * @param \Doctrine\ORM\EntityManager $em    The entity manager
      * @param array                       $roles User Roles

@@ -67,6 +67,17 @@ class ValidationAnnotationTest extends TestBase
             array(
                 'Validate',
                 array(
+                    'field' => 'name',
+                    'defaultMessage' => 'This is a default message test'
+                ),
+                array(),
+                'This is a default message test',
+                -1,
+                400
+            ),
+            array(
+                'Validate',
+                array(
                     'field' => 'name'
                 ),
                 array(
