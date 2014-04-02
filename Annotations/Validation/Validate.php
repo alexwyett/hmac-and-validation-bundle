@@ -44,6 +44,13 @@ class Validate
      * @var \Symfony\Component\HttpKernel
      */
     private $kernel;
+    
+    /**
+     * Default message.  This will override the system error messages if set
+     * 
+     * @var string
+     */
+    private $defaultMessage;
 
     /**
      * Creates a new paramter validation object
@@ -59,6 +66,9 @@ class Validate
         }
         if (isset($options['optional'])) {
             $this->optional = $options['optional'];
+        }
+        if (isset($options['defaultMessage'])) {
+            $this->defaultMessage = $options['defaultMessage'];
         }
     }
     
@@ -114,6 +124,16 @@ class Validate
     public function getKernel()
     {
         return $this->kernel;
+    }
+    
+    /**
+     * Return the default message
+     * 
+     * @return string
+     */
+    public function getDefaultMessage()
+    {
+        return $this->defaultMessage;
     }
 
     /**
@@ -203,6 +223,10 @@ class Validate
      */
     protected function setValidationException($message, $code, $status)
     {
+        if ($this->getDefaultMessage()) {
+            $message = $this->getDefaultMessage();
+        }
+        
         throw new ValidationException(
             $this->getField(), 
             $message, 
