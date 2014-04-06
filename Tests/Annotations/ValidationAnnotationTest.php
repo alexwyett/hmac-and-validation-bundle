@@ -239,6 +239,18 @@ class ValidationAnnotationTest extends TestBase
             array(
                 'ValidateDate',
                 array(
+                    'field' => 'date'
+                ),
+                array(
+                    'date' => '2014-04-01'
+                ),
+                '',
+                0,
+                0
+            ),
+            array(
+                'ValidateDate',
+                array(
                     'field' => 'date',
                     'minDate' => 'now'
                 ),

@@ -96,7 +96,7 @@ class ValidateDate extends Validate
         $date = new \DateTime($this->getValue());
         
         // Check date is greater than min date
-        if ($date <= $this->getMinDate()) {
+        if ($this->getMinDate() != null && $date <= $this->getMinDate()) {
             $this->setValidationException(
                 sprintf(
                     '%s is less than the minimum date of %s', 
@@ -109,7 +109,7 @@ class ValidateDate extends Validate
         }
         
         // Check date is less than max date
-        if ($date > $this->getMaxDate()) {
+        if ($this->getMaxDate() != null && $date > $this->getMaxDate()) {
             $this->setValidationException(
                 sprintf(
                     '%s is greater than the maximum date of %s', 
@@ -133,18 +133,18 @@ class ValidateDate extends Validate
     private function _isDateValid($str)
     {
         if (!is_string($str)) {
-           return false;
+            return false;
         }
 
         $stamp = strtotime($str); 
         if (!is_numeric($stamp)) {
-           return false; 
+            return false; 
         }
 
-        if (!checkdate(date('m', $stamp), date('d', $stamp), date('Y', $stamp))) { 
-           return false; 
-        } 
+        if (!checkdate(date('m', $stamp), date('d', $stamp), date('Y', $stamp))) {
+            return false; 
+        }
         
-        return true; 
-      } 
+        return true;
+    }
 }
