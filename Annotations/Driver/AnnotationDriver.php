@@ -217,22 +217,6 @@ class AnnotationDriver
     }
     
     /**
-     * Return true if annotation object is part of the validation 
-     * exception namespace
-     * 
-     * @param object $annotation Annotation instance
-     * 
-     * @return boolean
-     */
-    private function _isValidationCollectionAnnotation($annotation)
-    {
-        return (strpos(
-            get_class($annotation), 
-            'AW\HmacBundle\Annotations\ValidationCollection'
-        ) === 0);
-    }
-    
-    /**
      * Return the validation collection annotation if set
      * 
      * @param string $method Controller method
@@ -244,7 +228,10 @@ class AnnotationDriver
         $array = array_filter(
             $this->reader->getMethodAnnotations($method), 
             function($annotation) {
-                return ($this->_isValidationCollectionAnnotation($annotation));
+                return (strpos(
+                    get_class($annotation), 
+                    'AW\HmacBundle\Annotations\ValidationCollection'
+                ) === 0);
             }
         );
         
