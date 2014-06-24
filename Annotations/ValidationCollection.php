@@ -152,14 +152,4 @@ class ValidationCollection
         }
         return $fields;
     }
-    
-    /**
-     * Set the request object
-     * 
-     * @return \Symfony\Component\HttpFoundation\Request
-     */
-    private function _getRequest()
-    {
-        $this->getController()->get('request');
-    }
 }

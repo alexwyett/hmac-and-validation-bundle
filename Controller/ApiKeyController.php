@@ -3,6 +3,7 @@
 namespace AW\HmacBundle\Controller;
 use AW\HmacBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use AW\HmacBundle\Annotations as AWAnnotation;
 use AW\HmacBundle\Annotations\HMAC;
@@ -24,11 +25,11 @@ class ApiKeyController extends DefaultController
     /**
      * Helper route for debugging hmac requests
      * 
-     * @Route("/debug")
+     * @Route("/debug", defaults={"_format" = "_json", "_filterable" = true})
      * @Method({"GET", "POST", "PUT", "DELETE", "OPTIONS"})
      * @HMAC(public=true)
      * 
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return array
      */
     public function debugAction()
     {
@@ -50,15 +51,13 @@ class ApiKeyController extends DefaultController
             $hashParams
         );
         
-        return $this->jsonResponse(
-            array(
-                'request' => $this->getRequest()->getUri(),
-                'method' => $this->getRequest()->getRealMethod(),
-                'hash' => $hash,
-                'correctHash' => $correctHash,
-                'status' => ($hash == $correctHash),
-                'hashParams' => $hashParams
-            )
+        return array(
+            'request' => $this->getRequest()->getUri(),
+            'method' => $this->getRequest()->getRealMethod(),
+            'hash' => $hash,
+            'correctHash' => $correctHash,
+            'status' => ($hash == $correctHash),
+            'hashParams' => $hashParams
         );
     }
     

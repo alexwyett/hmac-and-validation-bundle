@@ -4,11 +4,16 @@ namespace AW\HmacBundle\Annotations\Driver;
 
 use Doctrine\Common\Annotations\Reader as Reader;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use AW\HmacBundle\Annotations\HMAC as HMAC;
 use AW\HmacBundle\Annotations\Validation as Validation;
 use AW\HmacBundle\Exceptions\APIException as APIException;
+use \JmesPath;
+use \JmesPath\Env;
 
 /**
  * Driver for the HMAC annotation
@@ -60,11 +65,12 @@ class AnnotationDriver
     }
 
     /**
-     * Kernel controller
+     * Kernel controller.  Handles all requests before a controller function
+     * is called.
      *
      * @param FilterControllerEvent $event Allows filtering of a controller
      *
-     * @throws \TOCC\PlatoBundle\Exceptions\APIException
+     * @throws \AW\HmacBundle\Exceptions\APIException
      * 
      * @return void
      */
@@ -124,6 +130,55 @@ class AnnotationDriver
             $validationAnnotation->setExceptions($validationExceptions);
             $validationAnnotation->setController($controller[0]);
             $validationAnnotation->throwException();
+        }
+    }
+
+    /**
+     * Kernel controller.  Handles all responses from a controller.
+     *
+     * @param FilterResponseEvent $event Allows filtering of controller responses
+     * 
+     * @return void
+     */
+    public function onKernelResponse(FilterResponseEvent $event)
+    {
+        
+    }
+
+    /**
+     * Kernel controller.  Handles all responses from a controller.
+     *
+     * @param GetResponseForControllerResultEvent $event Allows filtering of controller views before response
+     * 
+     * @return void
+     */
+    public function onKernelView(GetResponseForControllerResultEvent $event)
+    {
+        // Get returned data
+        $data = $event->getControllerResult();
+        
+        // If the controller response is filterable and there is a filter
+        // string provided, then filter the $data array
+        if ($event->getRequest()->get('_filterable', false)
+            && $event->getRequest()->get('filter', false)
+            && (is_array($data) || is_object($data))
+        ) {
+            $data = JmesPath\Env::search(
+                $event->getRequest()->get('filter'),
+                $data
+            );
+            
+            if ($data === null) {
+                throw new APIException('Invalid filter used', -1);
+            }
+        }
+        
+        // Check that the _json attribute is setand that the data is the
+        // correct format
+        if ($event->getRequest()->get('_format', '') === '_json') {
+            // Set the response to the event to be json
+            $httpStatus = $event->getRequest()->get('_httpstatus', 200);
+            $event->setResponse(new JsonResponse($data, $httpStatus));
         }
     }
     

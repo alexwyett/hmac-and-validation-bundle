@@ -1,8 +1,11 @@
 services:
     hmac_annotation_driver:
         class: AW\HmacBundle\Annotations\Driver\AnnotationDriver
-        tags: [{name: kernel.event_listener, event: kernel.controller, method: onKernelController}]
+        tags:
+            - {name: kernel.event_listener, event: kernel.controller, method: onKernelController}
+            - {name: kernel.event_listener, event: kernel.response, method: onKernelResponse}
+            - {name: kernel.event_listener, event: kernel.view, method: onKernelView}
         arguments: [@annotation_reader, "@doctrine.orm.entity_manager", "%aw_hmac.hmac%"]
     AW_apiuser_service:
-        class: AW\HmacBundle\Services\ApiUserService
+        class: AW\HmacBundle\Services\ApiUser
         arguments: ["@doctrine.orm.default_entity_manager", "%aw_hmac.hmac_roles%"]

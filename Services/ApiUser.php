@@ -15,7 +15,7 @@ use AW\HmacBundle\Entity\ApiUser;
  * @license   All rights reserved
  * @link      http://www.wyett.co.uk
  */
-class ApiUserService
+class ApiUser
 {
     /**
      * Entity Manager
