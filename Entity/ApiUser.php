@@ -237,4 +237,14 @@ class ApiUser
             'enabled' => $this->isEnabled()
         );
     }
+
+    /**
+     * Get enabled
+     *
+     * @return boolean 
+     */
+    public function getEnabled()
+    {
+        return $this->enabled;
+    }
 }

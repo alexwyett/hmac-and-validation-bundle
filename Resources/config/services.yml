@@ -7,5 +7,14 @@ services:
             - {name: kernel.event_listener, event: kernel.view, method: onKernelView}
         arguments: [@annotation_reader, "@doctrine.orm.entity_manager", "%aw_hmac.hmac%"]
     AW_apiuser_service:
-        class: AW\HmacBundle\Services\ApiUser
+        class: AW\HmacBundle\Services\ApiUserService
         arguments: ["@doctrine.orm.default_entity_manager", "%aw_hmac.hmac_roles%"]
+    AW_user_service:
+        class: AW\HmacBundle\Services\UserService
+        arguments: ["@doctrine.orm.default_entity_manager"]
+    AW_role_service:
+        class: AW\HmacBundle\Services\RoleService
+        arguments: ["@doctrine.orm.default_entity_manager"]
+    AW_route_service:
+        class: AW\HmacBundle\Services\RouteService
+        arguments: ["@doctrine.orm.default_entity_manager"]

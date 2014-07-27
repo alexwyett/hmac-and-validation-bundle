@@ -64,7 +64,7 @@ class ApiKeyController extends DefaultController
     /**
      * List ApiUsers function
      * 
-     * @Route("/apiuser")
+     * @Route("/apiuser", defaults={"_format" = "_json", "_filterable" = true})
      * @Method("GET")
      * @HMAC(public=false, roles="ADMIN")
      * 
@@ -72,15 +72,13 @@ class ApiKeyController extends DefaultController
      */
     public function listApiUsersAction()
     {
-        return $this->jsonResponse(
-            $this->_getUserService()->getApiUsers()
-        );
+        return $this->_getUserService()->getApiUsers();
     }
     
     /**
      * List ApiUsers function
      * 
-     * @Route("/apiuser/{apikey}", name="view_apiuser")
+     * @Route("/apiuser/{apikey}", name="view_apiuser", defaults={"_format" = "_json"})
      * @Method("GET")
      * @HMAC(public=false, roles="ADMIN")
      * 
@@ -88,9 +86,7 @@ class ApiKeyController extends DefaultController
      */
     public function listApiUserAction($apikey)
     {
-        return $this->jsonResponse(
-            $this->_getUserService()->getApiUser($apikey)
-        );
+        return $this->_getUserService()->getApiUser($apikey);
     }
     
     /**

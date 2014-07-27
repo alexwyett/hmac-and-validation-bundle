@@ -15,7 +15,7 @@ use AW\HmacBundle\Entity\ApiUser;
  * @license   All rights reserved
  * @link      http://www.wyett.co.uk
  */
-class ApiUser
+class ApiUserService
 {
     /**
      * Entity Manager
@@ -33,7 +33,7 @@ class ApiUser
 
 
     /**
-     * Creates a new user object
+     * Constructor
      *
      * @param \Doctrine\ORM\EntityManager $em    The entity manager
      * @param array                       $roles User Roles
@@ -95,7 +95,7 @@ class ApiUser
             throw new APIException('User already exists', -1, 400);
         }
             
-        $user = new ApiUser();
+        $user = new \AW\HmacBundle\Entity\ApiUser();
         $user->setApikey($key);
         $user->setApisecret($this->_getNewSecret());
         $user->setEmail($email);
