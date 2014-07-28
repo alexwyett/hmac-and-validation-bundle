@@ -194,7 +194,7 @@ class User
      * @param \AW\HmacBundle\Entity\Role $role
      * @return User
      */
-    public function addRole(\AW\HmacBundle\Entity\Role $role)
+    public function addRole(\AW\HmacBundle\Entity\UserRole $role)
     {
         $this->role[] = $role;
 
@@ -206,7 +206,7 @@ class User
      *
      * @param \AW\HmacBundle\Entity\Role $role
      */
-    public function removeRole(\AW\HmacBundle\Entity\Role $role)
+    public function removeRole(\AW\HmacBundle\Entity\UserRole $role)
     {
         $this->role->removeElement($role);
     }
