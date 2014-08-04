@@ -37,12 +37,22 @@ class UserServiceTest extends TestBase
      */
     public function testUserCrud()
     {
+        // Create a temp group
+        $group = self::$userService->createUserGroup('temp' . date('dmyhis'));
+        
         // Create a user
-        $user = self::$userService->createUser('test', 'test@test.com', 'test');
+        $user = self::$userService->createUser(
+            'test',
+            'test@test.com',
+            'test',
+            $group
+        );
+        
         $this->assertEquals('test', $user->getUsername());
         $this->assertEquals('test@test.com', $user->getEmail());
         $this->assertEquals('test', $user->getPassword());
         $this->assertFalse($user->isEnabled());
+        $this->assertTrue($user->getGroup()->contains($group));
         
         // Enable User
         $user = self::$userService->toggleUser($user->getId(), true);
@@ -65,6 +75,11 @@ class UserServiceTest extends TestBase
         // Delete the user
         $this->assertTrue(
             self::$userService->deleteUser($user->getId())
+        );
+        
+        // Delete the group
+        $this->assertTrue(
+            self::$userService->deleteUserGroup($group->getId())
         );
     }
 }

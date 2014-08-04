@@ -7,6 +7,45 @@ use AW\HmacBundle\Tests\TestBase;
 class UserControllerTest extends TestBase
 {
     /**
+     * User Service
+     * 
+     * @var \AW\HmacBundle\Services\UserService
+     */
+    protected static $userService;
+    
+    /**
+     * User Group
+     * 
+     * @var \AW\HmacBundle\Entity\UserGroup
+     */
+    protected static $userGroup;
+    
+    /**
+     * Do stuff before tests
+     * 
+     * @return void
+     */
+    public static function setUpBeforeClass()
+    {
+        $kernel = static::createKernel();
+        $kernel->boot();
+        self::$userService = $kernel->getContainer()->get('AW_user_service');
+        
+        // Create a temp group
+        self::$userGroup = self::$userService->createUserGroup('temp' . date('dmyhis'));
+    }
+    
+    /**
+     * Do stuff after tests
+     * 
+     * @return void
+     */
+    public static function tearDownAfterClass()
+    {
+        self::$userService->deleteUserGroup(self::$userGroup->getId());
+    }
+    
+    /**
      * Test the add new user endpoint
      * 
      * @return void
@@ -20,7 +59,8 @@ class UserControllerTest extends TestBase
                 array(
                     'username' => 'alex',
                     'email' => 'alex@carltonsoftware.co.uk',
-                    'password' => 'password'
+                    'password' => 'password',
+                    'group' => self::$userGroup->getId()
                 )
             )
         );
@@ -83,6 +123,14 @@ class UserControllerTest extends TestBase
                 'params' => array(
                     'key' => 'bla',
                     'email' => 'invalidEmail',
+                    'password' => 'apassword'
+                ),
+                400
+            ),
+            array(
+                'params' => array(
+                    'key' => 'bla',
+                    'email' => 'valieemail@email.com',
                     'password' => 'apassword'
                 ),
                 400
