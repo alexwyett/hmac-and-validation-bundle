@@ -49,7 +49,7 @@ class UserController extends DefaultController
      */
     public function listUserAction($userid)
     {
-        return $this->_getUserService()->getUserById($userid);
+        return $this->_getUserService()->getUserById($userid)->toArray();
     }
     
     /**
