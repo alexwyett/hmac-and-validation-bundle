@@ -56,6 +56,22 @@ class UserService
     }
     
     /**
+     * Return the list of UserGroups
+     * 
+     * @return array
+     */
+    public function getGroups()
+    {
+        $groups= array();
+        $groupsEm = $this->em->getRepository('AWHmacBundle:UserGroup')->findAll();
+        foreach ($groupsEm as $group) {
+            $groups[] = $group->toArray();
+        }
+        
+        return $groups;
+    }
+    
+    /**
      * Check if a user has access to a given route
      * 
      * @param integer $userid User Id
@@ -137,26 +153,94 @@ class UserService
     }
     
     /**
+     * Add a group to a user
+     * 
+     * @param string                          $userid Role ID
+     * @param \AW\HmacBundle\Entity\UserGroup $group  Group
+     * 
+     * @return \AW\HmacBundle\Entity\User
+     */
+    public function addUserGroup($userid, $group)
+    {
+        $user = $this->getUserById($userid);
+        
+        // Check for role existence
+        if ($user->getGroup()->contains($group)) {
+            throw new APIException(
+                sprintf(
+                    'Group \'%s\' already exists for user \'%s\'',
+                    $group->getName(),
+                    $user->getId()
+                ),
+                -1,
+                400
+            );
+        }
+        
+        $user->addGroup($group);
+        
+        $this->em->persist($user);
+        $this->em->flush();
+        
+        return $user;
+    }
+    
+    /**
+     * Remove a group from a user
+     * 
+     * @param string                          $userid Role ID
+     * @param \AW\HmacBundle\Entity\UserGroup $group  Group
+     * 
+     * @return \AW\HmacBundle\Entity\User
+     */
+    public function removeUserGroup($userid, $group)
+    {
+        $user = $this->getUserById($userid);
+        
+        // Check for role existence
+        if (!$user->getRole()->contains($group)) {
+            throw new APIException(
+                sprintf(
+                    'User \'%s\' is not a member of \'%s\' role',
+                    $user->getId(),
+                    $group->getName()
+                ),
+                -1,
+                400
+            );
+        }
+        
+        $user->removeGroup($group);
+        
+        $this->em->persist($user);
+        $this->em->flush();
+        
+        return $user;
+    }
+    
+    /**
      * User creation
      * 
-     * @param string $username User Name
-     * @param string $email    User Email
-     * @param string $password User Password
+     * @param string                          $username User Name
+     * @param string                          $email    User Email
+     * @param string                          $password User Password
+     * @param \AW\HmacBundle\Entity\UserGroup $group    User Group
      * 
      * @throws APIException
      * 
      * @return \AW\HmacBundle\Entity\User
      */
-    public function createUser($username, $email, $password)
+    public function createUser($username, $email, $password, $group)
     {
-        if ($this->_checkUserExists($username, $email)) {
+        if ($this->_checkUserExists($username, $email, $group)) {
             throw new APIException('User already exists', -1, 400);
         }
         
         $user = new \AW\HmacBundle\Entity\User();
         $user->setUsername($username)
             ->setEmail($email)
-            ->setPassword($password);
+            ->setPassword($password)
+            ->setGroup($group);
         
         $this->em->persist($user);
         $this->em->flush();
@@ -246,6 +330,68 @@ class UserService
     }
     
     /**
+     * Create a usergroup object
+     * 
+     * @param string $name Group Name
+     * 
+     * @throws APIException
+     * 
+     * @return \AW\HmacBundle\Entity\UserGroup
+     */
+    public function createUserGroup($name)
+    {
+        if ($this->_checkUserGroupExists($name)) {
+            throw new APIException('User Group already exists', -1, 400);
+        }
+        
+        $group = new \AW\HmacBundle\Entity\UserGroup();
+        $group->setName($name);
+        
+        $this->em->persist($group);
+        $this->em->flush();
+
+        return $group;
+    }
+    
+    /**
+     * Remove a user group
+     * 
+     * @param string $groupId User Group id
+     * 
+     * @return boolean
+     */
+    public function deleteUserGroup($groupId)
+    {
+        $group = $this->getUserGroupById($groupId);
+        $this->em->remove($group);
+        $this->em->flush();
+        
+        return true;
+    }
+    
+    /**
+     * Get user group object by id
+     * 
+     * @param string $groupId User Group id
+     * 
+     * @throws APIException
+     * 
+     * @return \AW\HmacBundle\Entity\UserGroup
+     */
+    public function getUserGroupById($groupId)
+    {
+        $group = $this->em->getRepository(
+            'AWHmacBundle:UserGroup'
+        )->findOneById($groupId);
+        
+        if ($group) {
+            return $group;
+        } else {
+            throw new APIException('User Group not found: ' . $groupId, -1, 404);
+        }
+    }
+    
+    /**
      * Get user object
      * 
      * @param string $username User Name
@@ -253,13 +399,13 @@ class UserService
      * 
      * @throws APIException
      * 
-     * @return \AW\HmacBundle\Entity\User
+     * @return array
      */
     private function _getUserByUsernameAndEmail($username, $email)
     {
         $user = $this->em->getRepository(
             'AWHmacBundle:User'
-        )->findOneBy(
+        )->findBy(
             array(
                 'username' => $username,
                 'email' => $email
@@ -284,16 +430,46 @@ class UserService
     /**
      * Check if a user exists or not
      * 
-     * @param string $username User Name
-     * @param string $email    User Email
+     * @param string                          $username User Name
+     * @param string                          $email    User Email
+     * @param \AW\HmacBundle\Entity\UserGroup $group    User Group
      * 
      * @return boolean
      */
-    private function _checkUserExists($username, $email)
+    private function _checkUserExists($username, $email, $group)
     {
         try {
-            $this->_getUserByUsernameAndEmail($username, $email);
-            return true;
+            $user = $this->_getUserByUsernameAndEmail($username, $email);
+            foreach ($user as $u) {
+                if ($u->getGroup() === $group) {
+                    return true;
+                }
+            }
+            
+            return false;
+        } catch (APIException $ex) {
+            return false;
+        }
+    }
+    
+    /**
+     * Check if a group exists or not
+     * 
+     * @param string $groupname Name
+     * 
+     * @return boolean
+     */
+    private function _checkUserGroupExists($groupname)
+    {
+        try {
+            $groups = $this->getGroups();
+            foreach ($groups as $group) {
+                if ($group['name'] === $groupname) {
+                    return true;
+                }
+            }
+            
+            return false;
         } catch (APIException $ex) {
             return false;
         }
