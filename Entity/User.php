@@ -45,6 +45,12 @@ class User
      * @ORM\Column(type="boolean")
      */
     protected $enabled = false;
+
+    /** 
+     * @ORM\ManyToOne(targetEntity="UserGroup", inversedBy="User")
+     * @ORM\JoinColumn(name="group_id", referencedColumnName="id")
+     */
+    private $group;
     
     /**
      * Many-To-Many, Unidirectional
@@ -65,6 +71,7 @@ class User
     public function __construct()
     {
         $this->role = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->group = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -258,7 +265,31 @@ class User
             'username' => $this->getUsername(),
             'email' => $this->getEmail(),
             'enabled' => $this->isEnabled(),
-            'roles' => $roles
+            'roles' => $roles,
+            'group' => $this->getGroup()->toArray()
         );
+    }
+
+    /**
+     * Set group
+     *
+     * @param \AW\HmacBundle\Entity\UserGroup $group
+     * @return User
+     */
+    public function setGroup(\AW\HmacBundle\Entity\UserGroup $group = null)
+    {
+        $this->group = $group;
+
+        return $this;
+    }
+
+    /**
+     * Get group
+     *
+     * @return \AW\HmacBundle\Entity\UserGroup 
+     */
+    public function getGroup()
+    {
+        return $this->group;
     }
 }
