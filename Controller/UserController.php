@@ -61,6 +61,7 @@ class UserController extends DefaultController
      * @Validation\ValidateString(field="username", maxLength=64)
      * @Validation\ValidateEmail(field="email", maxLength=64)
      * @Validation\ValidateString(field="password", maxLength=128)
+     * @Validation\ValidateNumber(field="group")
      * 
      * @return \Symfony\Component\HttpFoundation\Response
      */
@@ -69,7 +70,10 @@ class UserController extends DefaultController
         $user = $this->_getUserService()->createUser(
             $this->getFromRequest('username'), 
             $this->getFromRequest('email'),
-            $this->getFromRequest('password')
+            $this->getFromRequest('password'),
+            $this->_getUserService()->getUserGroupById(
+                $this->getFromRequest('group')
+            )
         );
         
         return $this->createdResponse(
@@ -200,6 +204,60 @@ class UserController extends DefaultController
             $userid,
             $this->_getRoleService()->getRoleById($roleid)
         );
+        return $this->okResponse();
+    }
+    
+    /**
+     * List User Groups function
+     * 
+     * @Route("/usergroup", name="view_groups", defaults={"_format" = "_json", "_filterable" = true})
+     * @Method("GET")
+     * @HMAC(public=false, roles="ADMIN")
+     * 
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function listGroupsAction()
+    {
+        return $this->_getUserService()->getGroups();
+    }
+    
+    /**
+     * Create a user group
+     * 
+     * @Route("/usergroup", name="create_usergroup")
+     * @Method("POST")
+     * @HMAC(public=false, roles="ADMIN")
+     * @Validation\ValidateString(field="name", maxLength=64)
+     * 
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function createUserGroupAction()
+    {
+        $this->_getUserService()->createUserGroup(
+            $this->getFromRequest('name')
+        );
+        
+        return $this->createdResponse(
+            $this->generateUrl(
+                'view_groups'
+            )
+        );
+    }
+    
+    /**
+     * Remove a user group
+     * 
+     * @param integer $groupId User Id
+     * 
+     * @Route("/usergroup/{userid}", name="delete_usergroup")
+     * @Method("DELETE")
+     * @HMAC(public=false, roles="ADMIN")
+     * 
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function deleteUserGroupAction($groupId)
+    {
+        $this->_getUserService()->deleteUserGroup($groupId);
         return $this->okResponse();
     }
     
