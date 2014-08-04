@@ -42,7 +42,7 @@ class UserControllerTest extends TestBase
      */
     public static function tearDownAfterClass()
     {
-        self::$userService->deleteUserGroup(self::$userGroup->getId());
+        
     }
     
     /**
@@ -66,6 +66,23 @@ class UserControllerTest extends TestBase
         );
         
         $this->assertEquals(201, $status);
+        
+        // Remove User then usergroup
+        extract(
+            $this->doRequest(
+                $headers->get('Content-Location'),
+                'GET'
+            )
+        );
+        
+        extract(
+            $this->doRequest(
+                '/hmac/user/' . $json['id'],
+                'DELETE'
+            )
+        );
+        
+        self::$userService->deleteUserGroup(self::$userGroup->getId());
     }
     
     /**

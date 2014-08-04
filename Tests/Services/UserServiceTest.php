@@ -52,7 +52,7 @@ class UserServiceTest extends TestBase
         $this->assertEquals('test@test.com', $user->getEmail());
         $this->assertEquals('test', $user->getPassword());
         $this->assertFalse($user->isEnabled());
-        $this->assertTrue($user->getGroup()->contains($group));
+        $this->assertTrue($user->getGroup() == $group);
         
         // Enable User
         $user = self::$userService->toggleUser($user->getId(), true);
