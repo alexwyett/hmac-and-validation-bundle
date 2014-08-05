@@ -232,7 +232,7 @@ class UserService
      */
     public function createUser($username, $email, $password, $group)
     {
-        if ($this->_checkUserExists($username, $email, $group)) {
+        if ($this->_checkUserExists($username, $email, $password, $group)) {
             throw new APIException('User already exists', -1, 400);
         }
         
@@ -395,15 +395,15 @@ class UserService
      * Login function
      * 
      * @param string                          $username User Name
-     * @param string                          $email    User Email
+     * @param string                          $password User Password
      * @param \AW\HmacBundle\Entity\UserGroup $group    User Group
      * 
      * @return boolean
      */
-    public function getUserByLogin($username, $email, $group)
+    public function getUserByLogin($username, $password, $group)
     {
         try {
-            $user = $this->_getUserByUsernameAndEmail($username, $email);
+            $user = $this->_getUserByUsernameAndPassword($username, $password);
             foreach ($user as $u) {
                 if ($u->getGroup() === $group) {
                     return $u;
@@ -420,21 +420,37 @@ class UserService
      * Get user object
      * 
      * @param string $username User Name
-     * @param string $email    User Email
+     * @param string $password User Password
      * 
      * @throws APIException
      * 
      * @return array
      */
-    private function _getUserByUsernameAndEmail($username, $email)
+    private function _getUserByUsernameAndPassword($username, $password)
+    {
+        return $this->_getUserByParams(
+            array(
+                'username' => $username,
+                'password' => $password
+            )
+        );
+    }
+    
+    /**
+     * Get user object by an array of params
+     * 
+     * @param array $params Key/Val array
+     * 
+     * @throws APIException
+     * 
+     * @return Array
+     */
+    private function _getUserByParams($params)
     {
         $user = $this->em->getRepository(
             'AWHmacBundle:User'
         )->findBy(
-            array(
-                'username' => $username,
-                'email' => $email
-            )
+            $params
         );
         
         if ($user) {
@@ -442,9 +458,8 @@ class UserService
         } else {
             throw new APIException(
                 sprintf(
-                    'User not found: %s %s',
-                    $username,
-                    $email
+                    'User not found: %s',
+                    implode($params)
                 ),
                 -1,
                 404
@@ -457,17 +472,30 @@ class UserService
      * 
      * @param string                          $username User Name
      * @param string                          $email    User Email
+     * @param string                          $password User Password
      * @param \AW\HmacBundle\Entity\UserGroup $group    User Group
      * 
      * @return boolean
      */
-    private function _checkUserExists($username, $email, $group)
+    private function _checkUserExists($username, $email, $password, $group)
     {
-        if ($this->getUserByLogin($username, $email, $group)) {
-            return true;
-        } else {
-            return false;
+        $users = $this->_getUserByParams(
+            array(
+                'username' => $username,
+                'email' => $email,
+                'password' => $password
+            )
+        );
+        
+        if ($users) {
+            foreach ($users as $user) {
+                if ($user->getGroup() === $group) {
+                    return true;
+                }
+            }
         }
+        
+        return false;
     }
     
     /**
