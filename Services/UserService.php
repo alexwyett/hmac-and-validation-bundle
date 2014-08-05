@@ -392,6 +392,31 @@ class UserService
     }
     
     /**
+     * Login function
+     * 
+     * @param string                          $username User Name
+     * @param string                          $email    User Email
+     * @param \AW\HmacBundle\Entity\UserGroup $group    User Group
+     * 
+     * @return boolean
+     */
+    public function getUserByLogin($username, $email, $group)
+    {
+        try {
+            $user = $this->_getUserByUsernameAndEmail($username, $email);
+            foreach ($user as $u) {
+                if ($u->getGroup() === $group) {
+                    return $u;
+                }
+            }
+            
+            return false;
+        } catch (APIException $ex) {
+            return false;
+        }
+    }
+    
+    /**
      * Get user object
      * 
      * @param string $username User Name
@@ -438,16 +463,9 @@ class UserService
      */
     private function _checkUserExists($username, $email, $group)
     {
-        try {
-            $user = $this->_getUserByUsernameAndEmail($username, $email);
-            foreach ($user as $u) {
-                if ($u->getGroup() === $group) {
-                    return true;
-                }
-            }
-            
-            return false;
-        } catch (APIException $ex) {
+        if ($this->getUserByLogin($username, $email, $group)) {
+            return true;
+        } else {
             return false;
         }
     }
