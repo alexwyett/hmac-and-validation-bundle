@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping\Index;
  * @link      http://www.wyett.co.uk
  *
  * @ORM\Entity
- * @ORM\Table(name="User")
+ * @ORM\Table(name="User", uniqueConstraints={@ORM\UniqueConstraint(name="username_uniq", columns={"username"})})
  */
 class User
 {
