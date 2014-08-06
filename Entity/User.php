@@ -239,8 +239,10 @@ class User
     {
         if ($this->isEnabled()) {
             foreach ($this->getRole() as $role) {
-                if ($role->getRoutes()->contains($route)) {
-                    return true;
+                foreach ($role->getRoutes() as $ro) {
+                    if ($ro->getRoute() == $route) {
+                        return true;
+                    }
                 }
             }
         }
