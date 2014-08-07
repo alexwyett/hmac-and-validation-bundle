@@ -402,7 +402,27 @@ class UserService
     public function getUserByLogin($username, $password)
     {
         try {
-            return $this->_getUserByUsernameAndPassword($username, $password);
+            $user = $this->em->getRepository(
+                'AWHmacBundle:User'
+            )->findOneBy(
+                array(
+                    'username' => $username,
+                    'password' => $password
+                )
+            );
+
+            if ($user) {
+                return $user;
+            } else {
+                throw new APIException(
+                    sprintf(
+                        'User not found: %s',
+                        implode($params)
+                    ),
+                    -1,
+                    404
+                );
+            }
         } catch (APIException $ex) {
             return false;
         }

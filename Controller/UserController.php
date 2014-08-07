@@ -70,14 +70,15 @@ class UserController extends DefaultController
             $this->getFromRequest('password')
         );
         if ($user) {
-            return $this->okResponse();
-        } else {
-            throw new \AW\HmacBundle\Exceptions\APIException(
-                'Failed to authenticate user',
-                -1,
-                404
-            );
+            if ($user->isEnabled()) {
+                return $this->okResponse();
+            }
         }
+        throw new \AW\HmacBundle\Exceptions\APIException(
+            'Failed to authenticate user',
+            -1,
+            404
+        );
     }
     
     /**
