@@ -72,14 +72,15 @@ class UserServiceTest extends TestBase
         $this->assertEquals('test@test2.com', $user->getEmail());
         $this->assertEquals('test2', $user->getPassword());
         
+        $users = self::$userService->getUserByLogin(
+            $user->getUsername(),
+            $user->getPassword()
+        );
+        
         // Test the login function
         $this->assertEquals(
             $user,
-            self::$userService->getUserByLogin(
-                $user->getUsername(),
-                $user->getPassword(),
-                $group
-            )
+            $users[0]
         );
         
         // Delete the user

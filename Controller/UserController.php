@@ -53,6 +53,34 @@ class UserController extends DefaultController
     }
     
     /**
+     * Authenticate user action
+     * 
+     * @Route("/user/authenticate", name="authenticate_user")
+     * @Method("POST")
+     * @HMAC(public=false, roles="ADMIN")
+     * @Validation\ValidateString(field="username", maxLength=64)
+     * @Validation\ValidateString(field="password", maxLength=128)
+     * 
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function authenticateAction()
+    {
+        $user = $this->_getUserService()->getUserByLogin(
+            $this->getFromRequest('username'),
+            $this->getFromRequest('password')
+        );
+        if ($user) {
+            return $this->okResponse();
+        } else {
+            throw new \AW\HmacBundle\Exceptions\APIException(
+                'Failed to authenticate user',
+                -1,
+                404
+            );
+        }
+    }
+    
+    /**
      * Create a user
      * 
      * @Route("/user", name="create_user")

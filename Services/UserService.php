@@ -394,23 +394,15 @@ class UserService
     /**
      * Login function
      * 
-     * @param string                          $username User Name
-     * @param string                          $password User Password
-     * @param \AW\HmacBundle\Entity\UserGroup $group    User Group
+     * @param string $username User Name
+     * @param string $password User Password
      * 
      * @return boolean
      */
-    public function getUserByLogin($username, $password, $group)
+    public function getUserByLogin($username, $password)
     {
         try {
-            $user = $this->_getUserByUsernameAndPassword($username, $password);
-            foreach ($user as $u) {
-                if ($u->getGroup() === $group) {
-                    return $u;
-                }
-            }
-            
-            return false;
+            return $this->_getUserByUsernameAndPassword($username, $password);
         } catch (APIException $ex) {
             return false;
         }
@@ -479,13 +471,17 @@ class UserService
      */
     private function _checkUserExists($username, $email, $password, $group)
     {
-        $users = $this->_getUserByParams(
-            array(
-                'username' => $username,
-                'email' => $email,
-                'password' => $password
-            )
-        );
+        try {
+            $users = $this->_getUserByParams(
+                array(
+                    'username' => $username,
+                    'email' => $email,
+                    'password' => $password
+                )
+            );
+        } catch (\RuntimeException $ex) {
+            return false;
+        }
         
         if ($users) {
             foreach ($users as $user) {
