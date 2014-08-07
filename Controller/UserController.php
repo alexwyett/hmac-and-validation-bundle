@@ -71,7 +71,18 @@ class UserController extends DefaultController
         );
         if ($user) {
             if ($user->isEnabled()) {
-                return $this->okResponse();
+                $response = $this->okResponse();
+                $response->headers->set(
+                    'Content-Location',
+                    $this->generateUrl(
+                        'view_user',
+                        array(
+                            'userid' => $user->getId()
+                        )
+                    )
+                );
+                
+                return $response;
             }
         }
         throw new \AW\HmacBundle\Exceptions\APIException(
