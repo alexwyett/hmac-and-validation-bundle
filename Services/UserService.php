@@ -417,7 +417,7 @@ class UserService
                 throw new APIException(
                     sprintf(
                         'User not found: %s',
-                        implode($params)
+                        implode(array($username, $password))
                     ),
                     -1,
                     404
