@@ -29,7 +29,8 @@ abstract class DefaultController extends Controller
     {
         return new \Symfony\Component\HttpFoundation\Response(
             json_encode($data),
-            $status
+            $status,
+            array('Content-Type' => 'application/json')
         );
     }
 
@@ -117,5 +118,4 @@ abstract class DefaultController extends Controller
     {
         return $this->get('doctrine')->getManager($name);
     }
-
 }

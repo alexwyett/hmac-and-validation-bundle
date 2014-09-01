@@ -72,6 +72,35 @@ class UserService
     }
     
     /**
+     * Return a UserGroup
+     * 
+     * @param string $id User group Id
+     * 
+     * @return \AW\HmacBundle\Entity\UserGroup
+     */
+    public function getGroup($id)
+    {
+        $groups = $this->getGroups();
+        
+        $group = array_filter($groups, function($ele) use ($id) {
+            return $ele['id'] == $id;
+        });
+        
+        if (count($group) !== 1) {
+            throw new APIException(
+                sprintf(
+                    'Group not found: \'%s\'',
+                    $id
+                ),
+                -1,
+                400
+            );
+        }
+        
+        return $group[0];
+    }
+    
+    /**
      * Check if a user has access to a given route
      * 
      * @param integer $userid User Id

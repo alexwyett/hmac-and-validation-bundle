@@ -250,7 +250,7 @@ class UserController extends DefaultController
     /**
      * List User Groups function
      * 
-     * @Route("/usergroup", name="view_groups", defaults={"_format" = "_json", "_filterable" = true})
+     * @Route("/group", name="view_groups", defaults={"_format" = "_json", "_filterable" = true})
      * @Method("GET")
      * @HMAC(public=false, roles="ADMIN")
      * 
@@ -262,9 +262,23 @@ class UserController extends DefaultController
     }
     
     /**
+     * List User Group function
+     * 
+     * @Route("/group/{id}", name="view_group", defaults={"_format" = "_json"})
+     * @Method("GET")
+     * @HMAC(public=false, roles="ADMIN")
+     * 
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function listGroupAction($id)
+    {
+        return $this->_getUserService()->getGroup($id);
+    }
+    
+    /**
      * Create a user group
      * 
-     * @Route("/usergroup", name="create_usergroup")
+     * @Route("/group", name="create_group")
      * @Method("POST")
      * @HMAC(public=false, roles="ADMIN")
      * @Validation\ValidateString(field="name", maxLength=64)
@@ -273,13 +287,16 @@ class UserController extends DefaultController
      */
     public function createUserGroupAction()
     {
-        $this->_getUserService()->createUserGroup(
+        $group = $this->_getUserService()->createUserGroup(
             $this->getFromRequest('name')
         );
         
         return $this->createdResponse(
             $this->generateUrl(
-                'view_groups'
+                'view_group',
+                array(
+                    'id' => $group->getId()
+                )
             )
         );
     }
@@ -289,7 +306,7 @@ class UserController extends DefaultController
      * 
      * @param integer $groupId User Id
      * 
-     * @Route("/usergroup/{userid}", name="delete_usergroup")
+     * @Route("/group/{groupId}", name="delete_group")
      * @Method("DELETE")
      * @HMAC(public=false, roles="ADMIN")
      * 
