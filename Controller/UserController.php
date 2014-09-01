@@ -370,7 +370,7 @@ class UserController extends DefaultController
      * 
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function addRoleAction()
+    public function createRoleAction()
     {
         $role = $this->_getRoleService()->createRole(
             $this->getFromRequest('role')
@@ -384,6 +384,29 @@ class UserController extends DefaultController
                 )
             )
         );
+    }
+    
+    /**
+     * Update Role function
+     * 
+     * @param integer $roleId Role Id
+     * 
+     * @Route("/role/{roleId}", name="upate_role")
+     * @Method("PUT")
+     * @Validation\ValidateString(field="role", maxLength=64)
+     * @HMAC(public=false, roles="ADMIN")
+     * 
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function updateRoleAction($roleId)
+    {
+        $this->_getRoleService()->updateRole(
+            $roleId,
+            array(
+                'role' => $this->getFromRequest('role')
+            )
+        );
+        return $this->okResponse();
     }
     
     /**
