@@ -248,6 +248,29 @@ class UserController extends DefaultController
     }
     
     /**
+     * Delete all roles for a given user
+     * 
+     * @param integer $userid User Id
+     * 
+     * @Route("/user/{userid}/role", name="delete_all_user_roles")
+     * @Method("DELETE")
+     * @HMAC(public=false, roles="ADMIN")
+     * 
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function deleteUserRolesAction($userid)
+    {
+        $user = $this->_getUserService()->getUserById($userid);
+        foreach ($user->getRole() as $role) {
+            $this->_getUserService()->removeUserRole(
+                $userid,
+                $role
+            );
+        }
+        return $this->okResponse();
+    }
+    
+    /**
      * List User Groups function
      * 
      * @Route("/group", name="view_groups", defaults={"_format" = "_json", "_filterable" = true})
