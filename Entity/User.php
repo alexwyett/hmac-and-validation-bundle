@@ -266,6 +266,7 @@ class User
             'id' => $this->getId(),
             'username' => $this->getUsername(),
             'email' => $this->getEmail(),
+            'password' => $this->getPassword(),
             'enabled' => $this->isEnabled(),
             'roles' => $roles,
             'group' => $this->getGroup()->toArray()
