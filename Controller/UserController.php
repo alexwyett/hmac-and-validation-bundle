@@ -474,7 +474,7 @@ class UserController extends DefaultController
     
     
     /**
-     * Remove Role function
+     * Remove Role Route function
      * 
      * @param integer $roleid  Role Id
      * @param integer $routeid Route Id
@@ -495,6 +495,29 @@ class UserController extends DefaultController
         return $this->okResponse();
     }
     
+    /**
+     * Remove Role Route function
+     * 
+     * @param integer $roleid  Role Id
+     * 
+     * @Route("/role/{roleid}/route", name="remove_all_role_route")
+     * @Method("DELETE")
+     * @HMAC(public=false, roles="ADMIN")
+     * 
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function removeRoleRouteSAction($roleid)
+    {
+        $role = $this->_getRoleService()->getRoleById($roleid);
+        foreach ($role->getRoutes() as $route) {
+            $this->_getRoleService()->removeRoleRoute(
+                $roleid,
+                $route
+            );
+        }
+        
+        return $this->okResponse();
+    }
     
     /**
      * Return the role service.
